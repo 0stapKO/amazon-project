@@ -1,5 +1,8 @@
-import {cart} from '../data/cart.js'
+import {cart, updateCartQuantity, addToCart} from '../data/cart.js'
 import {products} from '../data/products.js'
+import { formatCurrency } from './utils/money.js'
+
+
 let productsHTML = ''
 
 products.forEach(product => {
@@ -18,12 +21,12 @@ products.forEach(product => {
             <img class="product-rating-stars"
               src="images/ratings/rating-${product.rating.stars*10}.png">
             <div class="product-rating-count link-primary">
-              ${product.rating.count}
+              $${product.rating.count}
             </div>
           </div>
 
           <div class="product-price">
-            $${(product.priceCents/100).toFixed(2)}
+            $${formatCurrency(product.priceCents)}
           </div>
 
           <div class="product-quantity-container">
@@ -59,7 +62,7 @@ products.forEach(product => {
 
 document.querySelector('.js-products-grid').innerHTML = productsHTML
 
-const addedMessageTimeouts = {}
+
 
 document.querySelectorAll('.js-add-to-cart')
 .forEach((button) => {
@@ -67,40 +70,8 @@ document.querySelectorAll('.js-add-to-cart')
         let addedDisappear
         if (addedDisappear) clearTimeout(addedDisappear)
         const {productId} = button.dataset
-        let matchingItem
-        const quantity = parseInt(document.querySelector(`.js-quantity-selector-${productId}`).value)
-        cart.forEach(product => {
-            if(product.productId == productId) {
-                matchingItem = product
-            }
-        })
-        if(matchingItem){
-            matchingItem.quantity += quantity
-        }
-        else{
-            cart.push({
-                productId,
-                quantity
-            })
-        }
 
-        const itemAdded = document.querySelector(`.js-added-to-cart-${productId}`)
-        itemAdded.classList.add('item-added')
-
-        const previousTimeoutId = addedMessageTimeouts[productId]
-        if (previousTimeoutId) {
-            clearTimeout(previousTimeoutId)
-        }
-
-        const timeoutId = setTimeout(() => {
-            itemAdded.classList.remove('item-added');
-        }, 2000)
-        
-        addedMessageTimeouts[productId] = timeoutId
-
-        let totalQuantity = 0
-        cart.forEach(item => totalQuantity += item.quantity)
-        document.querySelector('.js-cart-quantity').innerHTML = totalQuantity
-        console.log(cart)
+        addToCart(productId)
+        updateCartQuantity(productId)
     })
 })
