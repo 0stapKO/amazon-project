@@ -658,3 +658,7 @@ export const products = [
     ]
   }
 ];
+
+export const getProduct = (productId) => {
+  return products.filter(product => product.id === productId)[0]
+}
