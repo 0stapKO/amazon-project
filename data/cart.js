@@ -15,7 +15,8 @@ export const addToCart = (productId) => {
     else{
         cart.push({
             productId,
-            quantity
+            quantity,
+            deliveryOption: '1'
         })
     }
 
@@ -37,9 +38,9 @@ export const updateCartQuantity = (productId) => {
         
         addedMessageTimeouts[productId] = timeoutId
 
-        let totalQuantity = 0
-        cart.forEach(item => totalQuantity += item.quantity)
-        document.querySelector('.js-cart-quantity').innerHTML = totalQuantity
+        document.querySelector('.js-cart-quantity').innerHTML = itemsInCartCount()
+
+
 }
 
 export const deleteFromCart = (productId) => {
@@ -48,6 +49,27 @@ export const deleteFromCart = (productId) => {
     saveToStorage()
 }
 
-const saveToStorage = () => {
+export const saveToStorage = () => {
     localStorage.setItem('cart', JSON.stringify(cart))
+}
+
+export const itemsInCartCount = () => {
+    let num = 0
+    cart.forEach(cartItem => {
+        num += cartItem.quantity
+    })
+    return num
+}
+
+export const updateDeliveryOption = (productId, deliveryOption) => {
+    let matchingItem
+
+    cart.forEach(product => {
+        if(product.productId == productId) {
+            matchingItem = product
+        }
+    })
+
+    matchingItem.deliveryOption = deliveryOption
+    saveToStorage()
 }
